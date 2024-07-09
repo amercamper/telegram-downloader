@@ -11,8 +11,8 @@ if getenv('DEBUG') == "1":
 else:
     logging.basicConfig(level=logging.ERROR)
 
-ADMINS = getenv('ADMINS').split()
-BASE_FOLDER = getenv('DOWNLOAD_FOLDER', '/data')
+ADMINS = getenv('@jawfe').split()
+BASE_FOLDER = getenv('/data')
 DL_FOLDER = BASE_FOLDER
 
 try:
@@ -25,7 +25,7 @@ except:
 
 app = Client(
     name='TDownloader',
-    api_id=int(getenv('TELEGRAM_API_ID')),
-    api_hash=getenv('TELEGRAM_API_HASH'),
-    bot_token=getenv('BOT_TOKEN')
+    api_id=int(getenv('21211387')),
+    api_hash=getenv('82767b47d8c3d45a00fcf29cdbc7729f'),
+    bot_token=getenv('7371147227:AAH6X5SQgkXrlpLxO48-trcjp81pOEJk0Tk')
 )
