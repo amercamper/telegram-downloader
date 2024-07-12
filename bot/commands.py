@@ -1,6 +1,6 @@
-from textwrap import dedent
+ffrom textwrap import dedent
 
-from pyrogram.client import Client
+from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.filters import command, document, media
 from pyrogram.handlers.callback_query_handler import CallbackQueryHandler
@@ -12,6 +12,7 @@ from .util import checkAdmins
 
 
 def register(app: Client):
+    # Register message handlers for commands and file/media handling
     app.add_handler(MessageHandler(start, command('start')))
     app.add_handler(MessageHandler(botHelp, command('help')))
     app.add_handler(MessageHandler(usage, command('usage')))
@@ -19,6 +20,8 @@ def register(app: Client):
     app.add_handler(MessageHandler(getFolder, command('get')))
     app.add_handler(MessageHandler(leaveFolder, command('leave')))
     app.add_handler(MessageHandler(download.handler.addFile, document | media))
+    
+    # Register callback query handler for download manager
     app.add_handler(CallbackQueryHandler(download.manager.stopDownload))
 
 
@@ -45,14 +48,17 @@ async def botHelp(_, message: Message):
 
 @checkAdmins
 async def usage(_, message: Message):
-    usage = sysinfo.diskUsage(DL_FOLDER)
-    await message.reply(
-        dedent(f"""
-            The storage path configured has __{usage.capacity}__ of storage
-            Of those, __{usage.used}__ is in use, and __{usage.free}__ is free.
-        """),
-        parse_mode=ParseMode.MARKDOWN
-    )
+    try:
+        usage = sysinfo.diskUsage(DL_FOLDER)
+        await message.reply(
+            dedent(f"""
+                The storage path configured has __{usage.capacity}__ of storage
+                Of those, __{usage.used}__ is in use, and __{usage.free}__ is free.
+            """),
+            parse_mode=ParseMode.MARKDOWN
+        )
+    except Exception as e:
+        await message.reply(f"Error fetching disk usage: {e}")
 
 
 @checkAdmins
@@ -66,7 +72,7 @@ async def useFolder(_, message: Message):
     if userSetPath != path:
         await message.reply(f"Warning: Path is `{path}` not `{' '.join(args[1:])}`")
     folder.set(path)
-    await message.reply("Ok, send me files now and I will put it on this folder.")
+    await message.reply("Ok, send me files now and I will put them in this folder.")
 
 
 @checkAdmins
@@ -78,4 +84,4 @@ async def leaveFolder(_, message: Message):
 @checkAdmins
 async def getFolder(_, message: Message):
     path = folder.getPath()
-    await message.reply(f"I'm on the `{path}` folder")
+    await message.reply(f"I'm currently in the `{path}` folder")
